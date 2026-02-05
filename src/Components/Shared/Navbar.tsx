@@ -143,7 +143,7 @@ export default function Navbar() {
               </li>
 
               <li>
-                <Link href="/signup" className={linkClasses("/signup")}>
+                <Link href="/signUp" className={linkClasses("/signup")}>
                   <div className="flex flex-col items-center gap-1">
                     <FontAwesomeIcon icon={faUserPlus} className="text-xl" />
                     <span className="text-sm">SignUp</span>

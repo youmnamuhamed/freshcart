@@ -1,7 +1,10 @@
+import SignUpScreen from "@/features/Authentication/Screens/SignUp/SignUp.screen";
+
 export default function SignUpPage() {
   return (
     <>
-      <h2> signup</h2>
+      <SignUpScreen/>
+      
     </>
   );
 }
