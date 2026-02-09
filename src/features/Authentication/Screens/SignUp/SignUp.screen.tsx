@@ -5,7 +5,7 @@ export default function SignUpScreen() {
   return (
     <>
       <div className="py-10">
-        <div className="container mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 p-4 ">
+        <div className="container max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 p-4">
           <SignUpHero />
           <SignUpForm />
         </div>

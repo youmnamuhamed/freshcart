@@ -1,10 +1,61 @@
 "use client";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebook, faGoogle } from "@fortawesome/free-brands-svg-icons";
-import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { faSpinner, faUser } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { SignUpFormValues } from "../../Schemas/signup.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { SignUpSchema } from "../../Schemas/signup.schema";
+import signUpActions from "../../server/signup.actions";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 export default function SignUpForm() {
+  const router = useRouter();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setError,
+  } = useForm<SignUpFormValues>({
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      rePassword: "",
+      phone: "",
+      terms: false,
+    },
+    resolver: zodResolver(SignUpSchema),
+    mode: "onBlur",
+    reValidateMode: "onBlur",
+  });
+
+  const onSubmit: SubmitHandler<SignUpFormValues> = async (values) => {
+    try {
+      const response = await signUpActions(values);
+      console.log(response);
+
+      if (response?.success) {
+        toast.success(response.message);
+        setTimeout(() => {
+          router.push("/login");
+        }, 2000);
+      } else {
+        if (response?.errors) {
+          Object.keys(response.errors).forEach((key) => {
+            setError(key as keyof SignUpFormValues, {
+              message: response.errors[key],
+            });
+          });
+        }
+      }
+    } catch (error) {}
+  };
+
   return (
     <div className="">
       <div className="bg-white rounded-2xl shadow-lg px-6 py-10">
@@ -37,7 +88,7 @@ export default function SignUpForm() {
         </div>
 
         {/* Form */}
-        <form className="space-y-7">
+        <form className="space-y-7" onSubmit={handleSubmit(onSubmit)}>
           {/* Name */}
           <div className="flex flex-col gap-2">
             <label htmlFor="name">
@@ -48,9 +99,12 @@ export default function SignUpForm() {
               type="text"
               placeholder="Ali"
               className="form-control"
+              {...register("name")}
             />
+            {errors.name && (
+              <p className="text-red-500 mt-1"> * {errors.name.message}</p>
+            )}
           </div>
-
           {/* Email */}
           <div className="flex flex-col gap-2">
             <label htmlFor="email">
@@ -61,9 +115,12 @@ export default function SignUpForm() {
               type="email"
               placeholder="ali@example.com"
               className="form-control"
+              {...register("email")}
             />
+            {errors.email && (
+              <p className="text-red-500 mt-1"> * {errors.email.message}</p>
+            )}
           </div>
-
           {/* Password */}
           <div className="flex flex-col gap-2">
             <label htmlFor="password">
@@ -74,6 +131,7 @@ export default function SignUpForm() {
               type="password"
               placeholder="Create a strong password"
               className="form-control"
+              {...register("password")}
             />
             <div className="password-requirements">
               <div className="flex items-center gap-2">
@@ -93,8 +151,10 @@ export default function SignUpForm() {
                 Must be at least 8 characters with numbers and symbols
               </p>
             </div>
+            {errors.password && (
+              <p className="text-red-500 mt-1"> * {errors.password.message}</p>
+            )}
           </div>
-
           {/* Confirm Password */}
           <div className="flex flex-col gap-2">
             <label htmlFor="rePaasword">
@@ -105,9 +165,12 @@ export default function SignUpForm() {
               type="password"
               placeholder="Confirm your password"
               className="form-control"
+              {...register("rePassword")}
             />
+            {errors.rePassword && (
+              <p className="text-red-500 mt-1">* {errors.rePassword.message}</p>
+            )}
           </div>
-
           {/* Phone */}
           <div className="flex flex-col gap-2">
             <label htmlFor="phoneNum">
@@ -118,12 +181,15 @@ export default function SignUpForm() {
               type="tel"
               placeholder="+1 234 567 8900"
               className="form-control"
+              {...register("phone")}
             />
+            {errors.phone && (
+              <p className="text-red-500 mt-1"> * {errors.phone.message}</p>
+            )}
           </div>
-
           {/* Terms */}
           <div className="flex items-start gap-2">
-            <input type="checkbox" className="mt-1" />
+            <input type="checkbox" className="mt-1" {...register("terms")} />
             <p className="text-gray-600">
               I agree to the{" "}
               <span className="text-green-600 cursor-pointer">
@@ -135,15 +201,27 @@ export default function SignUpForm() {
               </span>{" "}
               <span className="text-red-500">*</span>
             </p>
+            {errors.terms && (
+              <p className="text-red-500 mt-1"> * {errors.terms.message}</p>
+            )}
           </div>
-
           {/* Submit */}
           <button
             type="submit"
-            className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2"
+            disabled={isSubmitting}
+            className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2 cusror-pointer disabled:cursor-not-allowed"
           >
-            <FontAwesomeIcon icon={faUser} />
-            Create My Account
+            {isSubmitting ? (
+              <>
+                <FontAwesomeIcon icon={faSpinner} />
+                Creating an account
+              </>
+            ) : (
+              <>
+                <FontAwesomeIcon icon={faUser} />
+                Create My Account
+              </>
+            )}
           </button>
         </form>
 
