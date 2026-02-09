@@ -16,9 +16,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import LoginAction from "../../server/login.actions";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
-import { object } from "zod";
+import { setToken } from "../../server/auth.action";
+import { setAuthInfo } from "@/Store/auth.slice";
+import { useDispatch } from "react-redux";
 
 export default function LoginForm() {
+  const dispatch = useDispatch();
+
   const router = useRouter();
   const {
     register,
@@ -31,7 +35,7 @@ export default function LoginForm() {
       password: "",
       rememberMe: false,
     },
-    // resolver: zodResolver(LoginSchema),
+    resolver: zodResolver(LoginSchema),
     mode: "onSubmit",
     reValidateMode: "onChange",
   });
@@ -39,6 +43,16 @@ export default function LoginForm() {
     try {
       const response = await LoginAction(values);
       if (response?.success) {
+        await setToken(response.data.token, values.rememberMe ?? false);
+      
+        
+        dispatch(
+          setAuthInfo({
+            isAuthenticated: true,
+            userInfo: { ...response.data.user },
+          }),
+        );
+
         toast.success(response.message);
         setTimeout(() => {
           router.push("/");

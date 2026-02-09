@@ -25,7 +25,19 @@ import Image from "next/image";
 import FreshCartLogo from "../../assets/Images/freshcart-logo.svg";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { AppState } from "@/Store/store";
+import { is } from "zod/v4/locales";
+import useLogout from "@/features/Authentication/Hooks/useLogout";
 export default function Navbar() {
+
+  const { logout } = useLogout();
+
+
+  const { isAuthenticated } = useSelector(
+    (appState: AppState) => appState.auth,
+  );
+
   const pathname = usePathname();
   const linkClasses = (path: string) =>
     `flex flex-col gap-2 transition-colors duration-200
@@ -142,31 +154,44 @@ export default function Navbar() {
                 </Link>
               </li>
 
-              <li>
-                <Link href="/signUp" className={linkClasses("/signup")}>
-                  <div className="flex flex-col items-center gap-1">
-                    <FontAwesomeIcon icon={faUserPlus} className="text-xl" />
-                    <span className="text-sm">SignUp</span>
-                  </div>
-                </Link>
-              </li>
+              {isAuthenticated ? (
+                <li
+                  className="flex flex-col items-center gap-1 hover:text-primary-600 transition-colors duration-200"
+                  onClick={logout}
+                >
+                  <FontAwesomeIcon
+                    icon={faRightFromBracket}
+                    className="text-xl"
+                  />
+                  <span className="text-sm">Logout</span>
+                </li>
+              ) : (
+                <>
+                  <li>
+                    <Link href="/signUp" className={linkClasses("/signup")}>
+                      <div className="flex flex-col items-center gap-1">
+                        <FontAwesomeIcon
+                          icon={faUserPlus}
+                          className="text-xl"
+                        />
+                        <span className="text-sm">SignUp</span>
+                      </div>
+                    </Link>
+                  </li>
 
-              <li>
-                <Link href="/login" className={linkClasses("/login")}>
-                  <div className="flex flex-col items-center gap-1">
-                    <FontAwesomeIcon icon={faAddressCard} className="text-xl" />
-                    <span className="text-sm">Login</span>
-                  </div>
-                </Link>
-              </li>
-
-              <li className="flex flex-col items-center gap-1 hover:text-primary-600 transition-colors duration-200">
-                <FontAwesomeIcon
-                  icon={faRightFromBracket}
-                  className="text-xl"
-                />
-                <span className="text-sm">Logout</span>
-              </li>
+                  <li>
+                    <Link href="/login" className={linkClasses("/login")}>
+                      <div className="flex flex-col items-center gap-1">
+                        <FontAwesomeIcon
+                          icon={faAddressCard}
+                          className="text-xl"
+                        />
+                        <span className="text-sm">Login</span>
+                      </div>
+                    </Link>
+                  </li>
+                </>
+              )}
             </ul>
 
             <button
@@ -342,43 +367,52 @@ export default function Navbar() {
               <div className="border-t-2 border-gray-300 pt-5">
                 <h2 className="text-xl font-bold">Account</h2>
                 <ul className="py-3 px-2 *:hover:bg-gray-100 transition-colors duration-200 space-y-3">
-                  <li>
-                    <Link
-                      href="/signup"
-                      className={MobileLinkClasses("/signup") + ` py-3 px-2`}
+                  {isAuthenticated ? (
+                    <li
+                      className="flex  items-center gap-1 hover:text-primary-600  transition-colors duration-200 py-3 px-2"
+                      onClick={logout}
                     >
-                      <div className="flex items-center gap-1">
-                        <FontAwesomeIcon
-                          icon={faUserPlus}
-                          className="text-xl"
-                        />
-                        <span className="text-sm">SignUp</span>
-                      </div>
-                    </Link>
-                  </li>
+                      <FontAwesomeIcon
+                        icon={faRightFromBracket}
+                        className="text-xl"
+                      />
+                      <span className="text-sm">Logout</span>
+                    </li>
+                  ) : (
+                    <>
+                      <li>
+                        <Link
+                          href="/signup"
+                          className={
+                            MobileLinkClasses("/signup") + ` py-3 px-2`
+                          }
+                        >
+                          <div className="flex items-center gap-1">
+                            <FontAwesomeIcon
+                              icon={faUserPlus}
+                              className="text-xl"
+                            />
+                            <span className="text-sm">SignUp</span>
+                          </div>
+                        </Link>
+                      </li>
 
-                  <li>
-                    <Link
-                      href="/login"
-                      className={MobileLinkClasses("/login") + ` py-3 px-2`}
-                    >
-                      <div className="flex items-center gap-1">
-                        <FontAwesomeIcon
-                          icon={faAddressCard}
-                          className="text-xl"
-                        />
-                        <span className="text-sm">Login</span>
-                      </div>
-                    </Link>
-                  </li>
-
-                  <li className="flex  items-center gap-1 hover:text-primary-600  transition-colors duration-200 py-3 px-2">
-                    <FontAwesomeIcon
-                      icon={faRightFromBracket}
-                      className="text-xl"
-                    />
-                    <span className="text-sm">Logout</span>
-                  </li>
+                      <li>
+                        <Link
+                          href="/login"
+                          className={MobileLinkClasses("/login") + ` py-3 px-2`}
+                        >
+                          <div className="flex items-center gap-1">
+                            <FontAwesomeIcon
+                              icon={faAddressCard}
+                              className="text-xl"
+                            />
+                            <span className="text-sm">Login</span>
+                          </div>
+                        </Link>
+                      </li>
+                    </>
+                  )}
                 </ul>
               </div>
             </div>
