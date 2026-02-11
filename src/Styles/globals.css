@@ -61,3 +61,21 @@
 @utility container {
   @apply mx-auto px-4 sm:px-6 lg:px-8;
 }
+
+.swiper-pagination-bullet {
+  width: 12px !important;
+  height: 12px !important;
+  transition: all 0.3s;
+  opacity: 1 !important;
+  background: #ffffff80 !important;
+}
+
+.swiper-pagination-bullet-active {
+  background: #fff !important;
+  border-radius: 6px !important;
+  width: 32px !important;
+}
+
+.w-20 {
+  width: calc(0.25rem * 20);
+}
