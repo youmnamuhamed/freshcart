@@ -58,3 +58,7 @@ export interface IProductsResponse {
   metadata: IMetadata;
   data: IProduct[];
 }
+
+export interface singleProductResponse {
+  data: IProduct;
+}

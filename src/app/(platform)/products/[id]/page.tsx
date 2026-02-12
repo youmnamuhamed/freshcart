@@ -1,7 +1,15 @@
-export default function ProductDetailsPage() {
+import { ProductDetailsScreen } from "@/features/Products/screens/ProductDetails.screen";
+
+type ProductDetailsPageProps = {
+  params: { id: string };
+};
+
+export default async function ProductDetails({
+  params,
+}: ProductDetailsPageProps) {
+  const { id } = await params;
+
   return (
-    <>
-      <h2>ProductDetails </h2>
-    </>
+    <ProductDetailsScreen productId={id} />
   );
 }

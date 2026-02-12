@@ -1,5 +1,5 @@
 import DealsBanner from "../Components/DealsBanner";
-import FeaturedProducts from "../Components/FeaturedProducts";
+import {FeaturedProducts} from "../Components/FeaturedProducts";
 import OurCategories from "../Components/OurCategories";
 import Slider from "../Components/Slider";
 import PromoBanner from "../Components/promoBanner"

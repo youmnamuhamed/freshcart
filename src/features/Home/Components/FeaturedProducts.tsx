@@ -1,12 +1,12 @@
 import ProductCard from "@/features/Products/components/ProductCard";
-import getProducts from "@/features/Products/server/products.action";
+import { getProducts } from "@/features/Products/server/products.action";
 import {
   IProduct,
   IProductsResponse,
 } from "@/features/Products/types/products.types";
 import React from "react";
 
-export default async function FeaturedProducts() {
+export async function FeaturedProducts() {
   const response: IProductsResponse = await getProducts();
 
   return (
