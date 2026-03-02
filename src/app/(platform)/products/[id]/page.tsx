@@ -4,12 +4,11 @@ type ProductDetailsPageProps = {
   params: { id: string };
 };
 
-export default async function ProductDetails({
-  params,
-}: ProductDetailsPageProps) {
-  const { id } = await params;
+export default async function ProductDetails({ params }: ProductDetailsPageProps) {
+  const { id } =await params;
+  console.log("Product ID from URL:", id);
 
-  return (
-    <ProductDetailsScreen productId={id} />
-  );
+  return <ProductDetailsScreen productId={id} />;
 }
+
+ 

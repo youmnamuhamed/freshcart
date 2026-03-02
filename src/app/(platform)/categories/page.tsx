@@ -1,7 +1,9 @@
+import AllCategoriesScreen from "@/features/Categories/screens/AllCategories.screen";
+
 export default function CategoriesPage() {
   return (
     <>
-      <h2>Categories </h2>
+      <AllCategoriesScreen />
     </>
   );
 }

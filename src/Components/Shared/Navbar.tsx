@@ -1,20 +1,16 @@
 "use client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faAddressCard,
-  faBabyCarriage,
   faBars,
-  faBolt,
   faCartShopping,
   faChevronDown,
-  faEllipsis,
+  faGift,
+  faHeadset,
   faHeart,
-  faPerson,
-  faPersonDress,
   faPhone,
   faRightFromBracket,
   faSearch,
-  faSuitcaseMedical,
+  faTruck,
   faUser,
   faUserPlus,
   faXmark,
@@ -26,26 +22,28 @@ import FreshCartLogo from "../../assets/Images/freshcart-logo.svg";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { AppState } from "@/Store/store";
-import { is } from "zod/v4/locales";
+import { AppState, useAppSelector } from "@/Store/store";
 import useLogout from "@/features/Authentication/Hooks/useLogout";
-export default function Navbar() {
 
+export default function Navbar() {
   const { logout } = useLogout();
 
-
-  const { isAuthenticated } = useSelector(
-    (appState: AppState) => appState.auth,
+  const numberOfCartItems = useAppSelector(
+    (state) => state.cart.numberOfCartItems,
   );
 
+  const { isAuthenticated, userInfo } = useSelector(
+    (appState: AppState) => appState.auth,
+  );
+  const userName = userInfo?.name || "";
   const pathname = usePathname();
-  const linkClasses = (path: string) =>
-    `flex flex-col gap-2 transition-colors duration-200
-   ${pathname === path ? "text-primary-600" : "hover:text-primary-600"}`;
 
-  const MobileLinkClasses = (path: string) =>
-    `flex gap-2 transition-colors duration-200
-   ${pathname === path ? "text-primary-600 bg-primary-300/50 rounded" : ""}`;
+  const navLinkClasses = (path: string) =>
+    `text-sm font-medium transition-colors duration-200 ${
+      pathname === path
+        ? "text-primary-600"
+        : "text-gray-700 hover:text-primary-600"
+    }`;
 
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
@@ -59,366 +57,379 @@ export default function Navbar() {
         setIsMenuOpen(false);
       }
     }
-
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const categories = [
+    { id: "6439d5b90049ad0b52b90048", name: "Electronics" },
+    { id: "6439d5b90049ad0b52b90049", name: "Men's Fashion" },
+    { id: "6439d5b90049ad0b52b90050", name: "Women's Fashion" },
+    { id: "6439d5b90049ad0b52b90051", name: "Beauty & Health" },
+  ];
+
   return (
     <>
-      <header>
-        <div className="container">
-          {/* top */}
-          <div className="hidden  lg:flex items-center justify-between py-2 border-b border-gray-300/50">
-            <ul className="flex gap-5 items-center *:flex *:gap-2 *:items-center">
-              <li>
-                <FontAwesomeIcon icon={faPhone} />
-                <a href="tel:+1(800) 123-456"> +1(800) 123-456</a>
+      <header className="border-b border-gray-200 shadow-sm">
+        {/* ── Top Bar ── */}
+        <div className="hidden lg:block  text-gray-500 text-sm">
+          <div className="container flex items-center justify-between py-2">
+            {/* Left: promo messages */}
+            <ul className="flex gap-6 items-center">
+              <li className="flex items-center gap-2">
+                <FontAwesomeIcon icon={faTruck} className="text-primary-600" />
+                <span>Free Shipping on Orders 500 EGP</span>
               </li>
-              <li>
-                <FontAwesomeIcon icon={faEnvelope} />
-                <a>Support @freshcart.com</a>
+              <li className="flex items-center gap-2">
+                <FontAwesomeIcon icon={faGift} className="text-primary-600" />
+                <span>New Arrivals Daily</span>
               </li>
             </ul>
+
+            {/* Right: contact + auth */}
             <ul className="flex gap-5 items-center">
-              <li>
-                <Link href={`track-order`}>Track order</Link>
+              <li className="flex items-center gap-1.5 hover:text-primary-500">
+                <FontAwesomeIcon icon={faPhone} />
+                <a href="tel:+18001234567" className="">
+                  +1 (800) 123-4567
+                </a>
               </li>
-              <li>
-                <Link href={`About`}>About</Link>
+              <li className="flex items-center gap-1.5 hover:text-primary-500">
+                <FontAwesomeIcon icon={faEnvelope} />
+                <a href="mailto:support@freshcart.com">support@freshcart.com</a>
               </li>
-              <li>
-                <Link href={`contact`}>Contact</Link>
-              </li>
-              <li>
-                <select>
-                  <option>EGP</option>
-                  <option>SAR</option>
-                  <option>AED</option>
-                </select>
-              </li>
-              <li>
-                <select>
-                  <option value={`en`}>English</option>
-                  <option value={`ar`}>Arabic</option>
-                </select>
-              </li>
-            </ul>
-          </div>
-          {/* main */}
-          <nav className="flex justify-between items-center py-6">
-            <h1>
-              <Link href="/">
-                <Image src={FreshCartLogo} alt="FreshCart Logo"></Image>
-              </Link>
-            </h1>
-            <search className="relative hidden lg:flex">
-              <input
-                className="form-control min-w-96"
-                placeholder="Search for products"
-              />
-              <FontAwesomeIcon
-                icon={faSearch}
-                className="absolute right-2 top-1/2 -translate-1/2"
-              />
-            </search>
-
-            <ul className="hidden lg:flex gap-8 items-center">
-              <li>
-                <Link href="/wishlist" className={linkClasses("/wishlist")}>
-                  <div className="flex flex-col items-center gap-1">
-                    <FontAwesomeIcon icon={faHeart} className="text-xl" />
-                    <span className="text-sm">WishList</span>
-                  </div>
-                </Link>
-              </li>
-
-              <li>
-                <Link href="/cart" className={linkClasses("/cart")}>
-                  <div className="flex flex-col items-center gap-1">
-                    <FontAwesomeIcon
-                      icon={faCartShopping}
-                      className="text-xl"
-                    />
-                    <span className="text-sm">Cart</span>
-                  </div>
-                </Link>
-              </li>
-
-              <li>
-                <Link href="/account" className={linkClasses("/account")}>
-                  <div className="flex flex-col items-center gap-1">
-                    <FontAwesomeIcon icon={faUser} className="text-xl" />
-                    <span className="text-sm">Account</span>
-                  </div>
-                </Link>
-              </li>
-
+              <li className="w-px h-4 bg-white/40" />
               {isAuthenticated ? (
-                <li
-                  className="flex flex-col items-center gap-1 hover:text-primary-600 transition-colors duration-200"
-                  onClick={logout}
-                >
-                  <FontAwesomeIcon
-                    icon={faRightFromBracket}
-                    className="text-xl"
-                  />
-                  <span className="text-sm">Logout</span>
-                </li>
+                <>
+                  <li className="flex items-center gap-1.5 cursor-pointer hover:text-primary-500">
+                    {/* Email as link to profile */}
+                    <Link
+                      href="/profile/addresses"
+                      className="flex items-center gap-1.5 text-gray-600 hover:text-primary-600 transition-colors"
+                    >
+                      <FontAwesomeIcon icon={faUser} />
+                      <p>{userName}</p>
+                    </Link>
+                  </li>
+                  <li
+                    className="flex items-center gap-1.5 cursor-pointer hover:text-primary-500"
+                    onClick={logout}
+                  >
+                    <FontAwesomeIcon icon={faRightFromBracket} />
+                    <span>Sign Out</span>
+                  </li>
+                </>
               ) : (
                 <>
                   <li>
-                    <Link href="/signUp" className={linkClasses("/signup")}>
-                      <div className="flex flex-col items-center gap-1">
-                        <FontAwesomeIcon
-                          icon={faUserPlus}
-                          className="text-xl"
-                        />
-                        <span className="text-sm">SignUp</span>
-                      </div>
+                    <Link
+                      href="/login"
+                      className="flex items-center gap-1.5 hover:underline"
+                    >
+                      <FontAwesomeIcon icon={faUser} />
+                      <span>Sign In</span>
                     </Link>
                   </li>
-
                   <li>
-                    <Link href="/login" className={linkClasses("/login")}>
-                      <div className="flex flex-col items-center gap-1">
-                        <FontAwesomeIcon
-                          icon={faAddressCard}
-                          className="text-xl"
-                        />
-                        <span className="text-sm">Login</span>
-                      </div>
+                    <Link
+                      href="/signUp"
+                      className="flex items-center gap-1.5 hover:underline"
+                    >
+                      <FontAwesomeIcon icon={faUserPlus} />
+                      <span>Sign Up</span>
                     </Link>
                   </li>
                 </>
               )}
             </ul>
-
-            <button
-              className="lg:hidden btn text-white bg-primary-600 "
-              onClick={ToggleMenu}
-            >
-              {isMenuOpen ? (
-                <FontAwesomeIcon icon={faXmark} />
-              ) : (
-                <FontAwesomeIcon icon={faBars} />
-              )}
-            </button>
-          </nav>
-        </div>
-        {/* categories nav */}
-        <nav className="hidden lg:flex bg-gray-100 w-full py-4">
-          <div className="container flex gap-8 items-center">
-            <div className="relative group">
-              <button className="btn flex items-center gap-3 bg-primary-600 text-white hover:bg-primary-600/90">
-                <FontAwesomeIcon icon={faBars} />
-                <span>All categories</span>
-                <FontAwesomeIcon icon={faChevronDown} />
-              </button>
-
-              <menu className="hidden group-hover:block absolute top-10 min-w-60 *:py-3 *:px-3 *:hover:bg-gray-100 rounded-lg bg-white  divide-y-2 divide-gray-300/30">
-                <li>
-                  <Link href={`/`} className="flex gap-2 items-center">
-                    <FontAwesomeIcon
-                      icon={faPerson}
-                      className="text-primary-600 text-xl "
-                    />
-                    <span>Men's Fashion</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link href={`/`} className="flex gap-2 items-center">
-                    <FontAwesomeIcon
-                      icon={faPersonDress}
-                      className="text-primary-600 text-xl "
-                    />
-                    <span>Women's Fashion</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link href={`/`} className="flex gap-2 items-center">
-                    <FontAwesomeIcon
-                      icon={faBabyCarriage}
-                      className="text-primary-600 text-xl "
-                    />
-                    <span>Baby & Toys</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link href={`/`} className="flex gap-2 items-center">
-                    <FontAwesomeIcon
-                      icon={faSuitcaseMedical}
-                      className="text-primary-600 text-xl "
-                    />
-                    <span>Beauty & Health</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link href={`/`} className="flex gap-2 items-center">
-                    <FontAwesomeIcon
-                      icon={faBolt}
-                      className="text-primary-600 text-xl "
-                    />
-                    <span>Electronics</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link href={`/`} className="flex gap-2 items-center">
-                    <FontAwesomeIcon
-                      icon={faEllipsis}
-                      className="text-primary-600 text-xl "
-                    />
-                    <span>View all categories</span>
-                  </Link>
-                </li>
-              </menu>
-            </div>
-
-            <ul className="flex gap-5 ">
-              <li>
-                <Link href={`/`}>Home</Link>
-              </li>
-              <li>
-                <Link href={`/recently-added`}>Recently Added</Link>
-              </li>
-              <li>
-                <Link href={`/featured-products`}>Featured products</Link>
-              </li>
-              <li>
-                <Link href={`/offers`}>Offers</Link>
-              </li>
-              <li>
-                <Link href={`/brands`}>Brands</Link>
-              </li>
-            </ul>
           </div>
-        </nav>
-        {/* OFF Canvas */}
-        {isMenuOpen && (
-          <>
-            <div
-              className=" background fixed z-30 inset-0 bg-black/50 cusror-pointer"
-              onClick={ToggleMenu}
-            ></div>
-            <div className="offCanvas fixed top-0 left-0 bottom-0 w-72 z-40 p-5 bg-white space-y-5 animate-slide-in">
-              <div className="flex justify-between items-center pb-5">
+        </div>
+
+        {/* ── Main Nav ── */}
+        <header className="">
+          <nav className="bg-white">
+            <div className="container flex items-center gap-6 py-4">
+              {/* Logo */}
+              <Link href="/" className="shrink-0">
                 <Image src={FreshCartLogo} alt="FreshCart Logo" />
-                <button className="btn rounded-full" onClick={ToggleMenu}>
-                  <FontAwesomeIcon icon={faXmark} />
+              </Link>
+
+              {/* Search */}
+              <div className="relative flex-1 hidden lg:flex max-w-xl">
+                <input
+                  className="w-full border border-gray-300 rounded-full py-2.5 pl-5 pr-12 text-sm outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition"
+                  placeholder="Search for products, brands and more..."
+                />
+                <button className="absolute right-0 top-0 bottom-0 bg-primary-600 hover:bg-primary-700 text-white rounded-full w-11 flex items-center justify-center transition-colors">
+                  <FontAwesomeIcon icon={faSearch} />
                 </button>
               </div>
 
-              <div className="border-t-2 border-gray-300 pt-5">
-                <search className="relative">
-                  <input
-                    className="form-control min-w-64"
-                    placeholder="Search for products"
-                  />
-                  <FontAwesomeIcon
-                    icon={faSearch}
-                    className="absolute right-2 top-1/2 -translate-1/2"
-                  />
-                </search>
-              </div>
+              {/* Desktop Nav Links */}
+              <ul className="hidden lg:flex items-center gap-6">
+                <li>
+                  <Link href="/" className={navLinkClasses("/")}>
+                    Home
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/products"
+                    className={navLinkClasses("/products")}
+                  >
+                    Shop
+                  </Link>
+                </li>
+                <li className="relative group">
+                  <button className="flex items-center gap-1 text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors duration-200">
+                    Categories
+                    <FontAwesomeIcon icon={faChevronDown} className="text-xs" />
+                  </button>
+                  <menu className="hidden group-hover:block absolute top-full left-0 mt-2 min-w-52 bg-white rounded-lg shadow-lg border border-gray-100 divide-y divide-gray-100 z-50">
+                    {categories.map((cat) => (
+                      <li key={cat.id} className="px-4 py-3 hover:bg-gray-50">
+                        <Link
+                          href={`/products?category=${cat.id}`}
+                          className="text-sm text-gray-700 hover:text-primary-600"
+                        >
+                          {cat.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </menu>
+                </li>
+                <li>
+                  <Link href="/brands" className={navLinkClasses("/brands")}>
+                    Brands
+                  </Link>
+                </li>
+              </ul>
 
-              <div>
-                <h2 className="text-xl font-bold">Main Menu</h2>
-                <ul className=" py-3 px-2 *:hover:bg-gray-100 transition-colors duration-200 space-y-3">
-                  <li>
-                    <Link
-                      href="/wishlist"
-                      className={MobileLinkClasses("/wishlist") + ` py-3 px-2`}
-                    >
-                      <div className="flex items-center gap-1">
-                        <FontAwesomeIcon icon={faHeart} className="text-xl" />
-                        <span className="text-sm">WishList</span>
-                      </div>
-                    </Link>
-                  </li>
+              {/* Right Icons */}
+              <div className="hidden lg:flex items-center gap-4 ml-auto">
+                {/* Support */}
+                <div className="flex items-center gap-2 text-gray-600">
+                  <div className="w-9 h-9 rounded-full bg-primary-50 flex items-center justify-center text-primary-600">
+                    <FontAwesomeIcon icon={faHeadset} className="text-lg" />
+                  </div>
+                  <div className="leading-tight">
+                    <p className="text-xs text-gray-400">Support</p>
+                    <p className="text-xs font-semibold text-gray-700">
+                      24/7 Help
+                    </p>
+                  </div>
+                </div>
 
-                  <li>
-                    <Link
-                      href="/cart"
-                      className={MobileLinkClasses("/cart") + `py-3 px-2`}
-                    >
-                      <div className="flex items-center gap-1">
-                        <FontAwesomeIcon
-                          icon={faCartShopping}
-                          className="text-xl"
-                        />
-                        <span className="text-sm">Cart</span>
-                      </div>
-                    </Link>
-                  </li>
+                {/* Wishlist */}
+                <Link
+                  href="/wishlist"
+                  className="text-gray-500 hover:text-primary-600 transition-colors duration-200"
+                >
+                  <FontAwesomeIcon icon={faHeart} className="text-xl" />
+                </Link>
 
-                  <li>
-                    <Link
-                      href="/account"
-                      className={MobileLinkClasses("/account") + ` py-3 px-2`}
-                    >
-                      <div className="flex  items-center gap-1">
-                        <FontAwesomeIcon icon={faUser} className="text-xl" />
-                        <span className="text-sm">Account</span>
-                      </div>
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-              <div className="border-t-2 border-gray-300 pt-5">
-                <h2 className="text-xl font-bold">Account</h2>
-                <ul className="py-3 px-2 *:hover:bg-gray-100 transition-colors duration-200 space-y-3">
-                  {isAuthenticated ? (
-                    <li
-                      className="flex  items-center gap-1 hover:text-primary-600  transition-colors duration-200 py-3 px-2"
+                {/* Cart */}
+                <Link
+                  href="/cart"
+                  className="relative p-2.5 rounded-full hover:bg-gray-100 transition-colors group"
+                >
+                  <div>
+                    <FontAwesomeIcon
+                      icon={faCartShopping}
+                      className="text-xl text-gray-500 group-hover:text-primary-600 transition-colors "
+                    />
+                    <span className="absolute top-0.5 right-0.5 size-4.5 rounded-full bg-primary-600 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white">
+                      {numberOfCartItems}
+                    </span>
+                  </div>
+                </Link>
+
+                {isAuthenticated ? (
+                  <div className="flex items-center gap-4">
+                    {/* Logout button */}
+                    <button
                       onClick={logout}
+                      className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium px-5 py-2.5 rounded-full transition-colors duration-200"
                     >
-                      <FontAwesomeIcon
-                        icon={faRightFromBracket}
-                        className="text-xl"
-                      />
-                      <span className="text-sm">Logout</span>
-                    </li>
-                  ) : (
-                    <>
-                      <li>
-                        <Link
-                          href="/signup"
-                          className={
-                            MobileLinkClasses("/signup") + ` py-3 px-2`
-                          }
-                        >
-                          <div className="flex items-center gap-1">
-                            <FontAwesomeIcon
-                              icon={faUserPlus}
-                              className="text-xl"
-                            />
-                            <span className="text-sm">SignUp</span>
-                          </div>
-                        </Link>
-                      </li>
+                      <FontAwesomeIcon icon={faRightFromBracket} />
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                ) : (
+                  <Link
+                    href="/login"
+                    className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium px-5 py-2.5 rounded-full transition-colors duration-200"
+                  >
+                    <FontAwesomeIcon icon={faUser} />
+                    <span>Sign In</span>
+                  </Link>
+                )}
+              </div>
 
-                      <li>
-                        <Link
-                          href="/login"
-                          className={MobileLinkClasses("/login") + ` py-3 px-2`}
-                        >
-                          <div className="flex items-center gap-1">
-                            <FontAwesomeIcon
-                              icon={faAddressCard}
-                              className="text-xl"
-                            />
-                            <span className="text-sm">Login</span>
-                          </div>
-                        </Link>
-                      </li>
-                    </>
-                  )}
-                </ul>
+              {/* Mobile Hamburger */}
+              <button
+                className="lg:hidden ml-auto btn text-white bg-primary-600"
+                onClick={ToggleMenu}
+              >
+                {isMenuOpen ? (
+                  <FontAwesomeIcon icon={faXmark} />
+                ) : (
+                  <FontAwesomeIcon icon={faBars} />
+                )}
+              </button>
+            </div>
+          </nav>
+        </header>
+      </header>
+
+      {/* ── Off-Canvas Mobile Menu ── */}
+      {isMenuOpen && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed z-30 inset-0 bg-black/50 cursor-pointer"
+            onClick={ToggleMenu}
+          />
+
+          {/* Drawer */}
+          <div className="fixed top-0 left-0 bottom-0 w-80 z-40 bg-white flex flex-col animate-slide-in overflow-y-auto">
+            {/* Search */}
+            <div className="px-5 py-4 border-b border-gray-100">
+              <div className="relative">
+                <input
+                  className="w-full border border-gray-200 bg-gray-50 rounded-lg py-3 pl-4 pr-12 text-sm outline-none focus:border-primary-500 focus:bg-white transition"
+                  placeholder="Search products..."
+                />
+                <button className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg w-8 h-8 flex items-center justify-center transition-colors">
+                  <FontAwesomeIcon icon={faSearch} className="text-xs" />
+                </button>
               </div>
             </div>
-          </>
-        )}
-      </header>
+
+            {/* Nav Links */}
+            <div className="px-5 py-4 border-b border-gray-100">
+              <ul className="space-y-1">
+                {[
+                  { href: "/", label: "Home" },
+                  { href: "/shop", label: "Shop" },
+                  { href: "/categories", label: "Categories" },
+                  { href: "/brands", label: "Brands" },
+                ].map(({ href, label }) => (
+                  <li key={href}>
+                    <Link
+                      href={href}
+                      onClick={ToggleMenu}
+                      className={`block px-3 py-3.5 text-base font-medium transition-colors rounded-lg ${
+                        pathname === href
+                          ? "text-primary-600"
+                          : "text-gray-700 hover:text-primary-600"
+                      }`}
+                    >
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Wishlist & Cart */}
+            <div className="px-5 py-4 border-b border-gray-100">
+              <ul className="space-y-2">
+                {/* Wishlist */}
+                <li>
+                  <Link
+                    href="/wishlist"
+                    onClick={ToggleMenu}
+                    className="flex items-center gap-3 px-3 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-400">
+                      <FontAwesomeIcon icon={faHeart} />
+                    </div>
+                    <span className="text-base font-medium">Wishlist</span>
+                  </Link>
+                </li>
+                {/* Cart */}
+                <li>
+                  <Link
+                    href="/cart"
+                    onClick={ToggleMenu}
+                    className="flex items-center justify-between px-3 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-primary-50 flex items-center justify-center text-primary-600">
+                        <FontAwesomeIcon icon={faCartShopping} />
+                      </div>
+                      <span className="text-base font-medium">Cart</span>
+                    </div>
+                    <span className="bg-primary-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                      {numberOfCartItems}
+                    </span>
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Sign In / Sign Up buttons */}
+            <div className="px-5 py-4 border-b border-gray-100">
+              {isAuthenticated ? (
+                <div className="space-y-2">
+                  {/* Email + Profile */}
+                  <Link
+                    href="/profile"
+                    onClick={ToggleMenu}
+                    className="block text-center text-gray-700 font-medium hover:text-primary-600"
+                  >
+                    <p>{userName}</p>
+                  </Link>
+
+                  {/* Logout */}
+                  <button
+                    onClick={() => {
+                      logout();
+                      ToggleMenu();
+                    }}
+                    className="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 rounded-xl transition-colors"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              ) : (
+                <div className="flex gap-3">
+                  <Link
+                    href="/login"
+                    onClick={ToggleMenu}
+                    className="flex-1 text-center bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 rounded-xl transition-colors"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/signUp"
+                    onClick={ToggleMenu}
+                    className="flex-1 text-center border-2 border-primary-600 text-primary-600 hover:bg-primary-50 font-semibold py-3 rounded-xl transition-colors"
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            {/* Need Help */}
+            <div className="px-5 py-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-primary-50 flex items-center justify-center text-primary-600">
+                  <FontAwesomeIcon icon={faHeadset} />
+                </div>
+                <div className="leading-tight">
+                  <p className="text-sm font-semibold text-gray-800">
+                    Need Help?
+                  </p>
+                  <p className="text-xs text-gray-400">Contact Support</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 }

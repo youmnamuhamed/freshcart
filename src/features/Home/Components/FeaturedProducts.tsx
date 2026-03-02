@@ -4,8 +4,7 @@ import {
   IProduct,
   IProductsResponse,
 } from "@/features/Products/types/products.types";
-import React from "react";
-
+ 
 export async function FeaturedProducts() {
   const response: IProductsResponse = await getProducts();
 

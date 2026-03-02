@@ -32,7 +32,6 @@ export default function ProductInfo({ product }: { product: IProduct }) {
     quantity,
     price,
     priceAfterDiscount,
-    subcategory,
     category,
     brand,
   } = product;
@@ -69,7 +68,7 @@ export default function ProductInfo({ product }: { product: IProduct }) {
             href="/category/women-fashion"
             className="hover:text-green-600 transition"
           >
-            a
+            {category?.name || "Category"}
           </Link>
 
           <FontAwesomeIcon
@@ -81,7 +80,9 @@ export default function ProductInfo({ product }: { product: IProduct }) {
           <Link
             href="/category/women-clothing"
             className="hover:text-green-600 transition"
-          ></Link>
+          >
+            {product.subcategory?.[0]?.name || "SubCategory"}
+          </Link>
 
           <FontAwesomeIcon
             icon={faChevronRight}
@@ -89,7 +90,7 @@ export default function ProductInfo({ product }: { product: IProduct }) {
           />
 
           {/* Current Page (No Link) */}
-          <span className="text-gray-900 font-medium">Woman Shawl</span>
+          <span className="text-gray-900 font-medium">{title}</span>
         </div>
       </section>
 

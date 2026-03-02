@@ -1,7 +1,9 @@
+import ForgotPasswrodScreen from "../../../features/Authentication/Screens/ForgetPassword/ForgetPassword.screen";
+
 export default function ForgetPasswrodPage() {
   return (
     <>
-      <h2> forget password</h2>
+      <ForgotPasswrodScreen />
     </>
   );
 }

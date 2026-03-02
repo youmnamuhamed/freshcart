@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -9,6 +10,15 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { IProduct } from "../types/products.types";
+import {
+  addProductToCart,
+  getLoggedUserCart,
+} from "@/features/Cart/server/cart.actions";
+import { toast } from "react-toastify";
+import { use, useState } from "react";
+import { setCartnfo } from "@/features/Cart/Store/cart.slice";
+import { useDispatch } from "react-redux";
+import { useAppDispatch } from "@/Store/store";
 
 export default function ProductCard({ info }: { info: IProduct }) {
   const {
@@ -21,22 +31,47 @@ export default function ProductCard({ info }: { info: IProduct }) {
     price,
     priceAfterDiscount,
   } = info;
+
+  const dispatch = useAppDispatch();
+
   const Onsale = priceAfterDiscount ? priceAfterDiscount < price : false;
   const discountPercentage = priceAfterDiscount
     ? Math.round(((price - priceAfterDiscount) / price) * 100)
     : 0;
 
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleAddToCart = async () => {
+    setIsLoading(true);
+    try {
+      const response = await addProductToCart({ ProductId: id });
+      console.log(response);
+      if (response.status == "success") {
+        toast.success(response.message);
+
+        const cartInfo = await getLoggedUserCart();
+        dispatch(setCartnfo(cartInfo));
+      }
+    } catch (error) {
+      toast.error("failed to add the product");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <>
       <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
         <div className="relative">
-          <Image
-            src={imageCover}
-            alt={title}
-            width={300}
-            height={300}
-            className="w-full h-60 object-contain bg-white"
-          />
+          <Link href={`/products/${id}`}>
+            <Image
+              src={imageCover}
+              alt={title}
+              width={300}
+              height={300}
+              className="w-full h-60 object-contain bg-white"
+            />
+          </Link>
           <div className="absolute top-3 left-3">
             {Onsale && (
               <span className="bg-red-500 text-white text-xs px-2 py-1 rounded">
@@ -64,15 +99,13 @@ export default function ProductCard({ info }: { info: IProduct }) {
         <div className="p-4">
           <div className="text-xs text-gray-500 mb-1">{category.name}</div>
           <h3 className="font-medium mb-1 cursor-pointer ">
-            <Link href={``} className="line-clamp-2">
+            <Link href={`/products/${id}`} className="line-clamp-2">
               {title}
             </Link>
           </h3>
           <div className="flex items-center mb-2">
             <div className="flex text-amber-400 mr-2">
-              <div className="text-yellow-400">
-                {/* Rating component */}
-              </div>
+              <div className="text-yellow-400">{/* Rating component */}</div>
             </div>
             <div className="text-xs text-gray-500">
               {ratingsAverage} ({ratingsQuantity} reviews)
@@ -90,7 +123,11 @@ export default function ProductCard({ info }: { info: IProduct }) {
                 </span>
               )}
             </div>
-            <button className="h-10 w-10 rounded-full flex items-center justify-center transition bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-70">
+            <button
+              className="h-10 w-10 rounded-full flex items-center justify-center transition bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-70"
+              onClick={handleAddToCart}
+              disabled={isLoading}
+            >
               <FontAwesomeIcon icon={faPlus} />
             </button>
           </div>
