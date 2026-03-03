@@ -2,11 +2,15 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars,
+  faBox,
   faCartShopping,
   faChevronDown,
+  faCircleUser,
+  faGear,
   faGift,
   faHeadset,
   faHeart,
+  faLocationDot,
   faPhone,
   faRightFromBracket,
   faSearch,
@@ -20,10 +24,11 @@ import Link from "next/link";
 import Image from "next/image";
 import FreshCartLogo from "../../assets/Images/freshcart-logo.svg";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { AppState, useAppSelector } from "@/Store/store";
 import useLogout from "@/features/Authentication/Hooks/useLogout";
+import { GetAllCategories } from "@/features/Categories/server/categories.action";
 
 export default function Navbar() {
   const { logout } = useLogout();
@@ -61,16 +66,33 @@ export default function Navbar() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const categories = [
-    { id: "6439d5b90049ad0b52b90048", name: "Electronics" },
-    { id: "6439d5b90049ad0b52b90049", name: "Men's Fashion" },
-    { id: "6439d5b90049ad0b52b90050", name: "Women's Fashion" },
-    { id: "6439d5b90049ad0b52b90051", name: "Beauty & Health" },
-  ];
+  const [openMenu, setOpenMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpenMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const [categories, setCategories] = useState<{ _id: string; name: string }[]>(
+    [],
+  );
+
+  useEffect(() => {
+    GetAllCategories().then((res) => setCategories(res.data));
+  }, []);
 
   return (
     <>
-      <header className="border-b border-gray-200 shadow-sm">
+  <div className="border-b border-gray-200 shadow-sm">
         {/* ── Top Bar ── */}
         <div className="hidden lg:block  text-gray-500 text-sm">
           <div className="container flex items-center justify-between py-2">
@@ -144,9 +166,10 @@ export default function Navbar() {
             </ul>
           </div>
         </div>
+         </div>
 
         {/* ── Main Nav ── */}
-        <header className="">
+        <header className="sticky top-0 z-40 bg-white shadow-sm">
           <nav className="bg-white">
             <div className="container flex items-center gap-6 py-4">
               {/* Logo */}
@@ -186,10 +209,18 @@ export default function Navbar() {
                     <FontAwesomeIcon icon={faChevronDown} className="text-xs" />
                   </button>
                   <menu className="hidden group-hover:block absolute top-full left-0 mt-2 min-w-52 bg-white rounded-lg shadow-lg border border-gray-100 divide-y divide-gray-100 z-50">
+                    <li className="px-4 py-3 hover:bg-gray-50">
+                      <Link
+                        href={`/categories`}
+                        className="text-sm text-gray-700 hover:text-primary-600"
+                      >
+                        All categories
+                      </Link>
+                    </li>
                     {categories.map((cat) => (
-                      <li key={cat.id} className="px-4 py-3 hover:bg-gray-50">
+                      <li key={cat._id} className="px-4 py-3 hover:bg-gray-50">
                         <Link
-                          href={`/products?category=${cat.id}`}
+                          href={`/products?category=${cat._id}`}
                           className="text-sm text-gray-700 hover:text-primary-600"
                         >
                           {cat.name}
@@ -245,15 +276,72 @@ export default function Navbar() {
                 </Link>
 
                 {isAuthenticated ? (
-                  <div className="flex items-center gap-4">
-                    {/* Logout button */}
+                  <div className="hidden lg:block relative" ref={menuRef}>
+                    {/* User Icon Button */}
                     <button
-                      onClick={logout}
-                      className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium px-5 py-2.5 rounded-full transition-colors duration-200"
+                      onClick={() => setOpenMenu(!openMenu)}
+                      className=" p-2.5 rounded-full hover:bg-gray-100 transition-colors group"
                     >
-                      <FontAwesomeIcon icon={faRightFromBracket} />
-                      <span>Sign Out</span>
+                      <FontAwesomeIcon
+                        icon={faCircleUser}
+                        className=" text-xl text-gray-500 group-hover:text-primary-600 transition-colors"
+                      />
                     </button>
+
+                    {/* Dropdown Menu */}
+                    {openMenu && (
+                      <div className="absolute right-0 mt-3 w-60 bg-white rounded-2xl shadow-lg border border-gray-200 py-2 z-50">
+                        <Link
+                          href="/profile"
+                          className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 text-sm"
+                        >
+                          <FontAwesomeIcon icon={faUser} />
+                          My Profile
+                        </Link>
+
+                        <Link
+                          href="/orders"
+                          className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 text-sm"
+                        >
+                          <FontAwesomeIcon icon={faBox} />
+                          My Orders
+                        </Link>
+
+                        <Link
+                          href="/wishlist"
+                          className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 text-sm"
+                        >
+                          <FontAwesomeIcon icon={faHeart} />
+                          My Wishlist
+                        </Link>
+
+                        <Link
+                          href="/addresses"
+                          className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 text-sm"
+                        >
+                          <FontAwesomeIcon icon={faLocationDot} />
+                          Addresses
+                        </Link>
+
+                        <Link
+                          href="/settings"
+                          className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 text-sm"
+                        >
+                          <FontAwesomeIcon icon={faGear} />
+                          Settings
+                        </Link>
+
+                        <div className="border-t my-2"></div>
+
+                        <button
+                          onClick={logout}
+                          className="flex items-center gap-3 px-4 py-2 w-full text-left text-red-600 hover:bg-red-50 text-sm"
+                        >
+                          <FontAwesomeIcon icon={faRightFromBracket} />
+                          Sign Out
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <Link
@@ -280,7 +368,7 @@ export default function Navbar() {
             </div>
           </nav>
         </header>
-      </header>
+     
 
       {/* ── Off-Canvas Mobile Menu ── */}
       {isMenuOpen && (

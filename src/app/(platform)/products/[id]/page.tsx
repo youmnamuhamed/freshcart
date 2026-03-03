@@ -11,4 +11,3 @@ export default async function ProductDetails({ params }: ProductDetailsPageProps
   return <ProductDetailsScreen productId={id} />;
 }
 
- 
