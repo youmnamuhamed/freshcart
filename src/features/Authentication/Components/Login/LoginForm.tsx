@@ -217,12 +217,12 @@ export default function LoginForm() {
           {/* Create Account Link */}
           <div className="text-center mb-6">
             <span className="text-gray-600">New to FreshCart? </span>
-            <a
-              href="#"
+            <Link
+              href={`/signUp`}
               className="text-green-600 hover:text-green-700 font-medium"
             >
               Create an account
-            </a>
+            </Link>
           </div>
 
           {/* Footer Info */}

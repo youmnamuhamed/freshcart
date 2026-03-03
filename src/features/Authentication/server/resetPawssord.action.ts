@@ -4,7 +4,7 @@ import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import { ResetPasswordFormValues, ResetPasswordSchema } from "../Schemas/resetPassword.schema";
 
 export default async function resetPasswordAction(values: ResetPasswordFormValues) {
-  // 1️⃣ Validate input
+  
   const validationResult = ResetPasswordSchema.safeParse(values);
 
   if (!validationResult.success) {
@@ -21,7 +21,7 @@ export default async function resetPasswordAction(values: ResetPasswordFormValue
     };
   }
 
-  // 2️⃣ Call API
+
   try {
     const options: AxiosRequestConfig = {
       url: "https://ecommerce.routemisr.com/api/v1/auth/resetPassword",
