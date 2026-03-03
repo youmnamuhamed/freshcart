@@ -1,7 +1,9 @@
+import OrdersScreen from "@/features/orders/screens/Orders.screen";
+
 export default function OrdersPage() {
   return (
     <>
-      <h2> orders</h2>
+      <OrdersScreen />
     </>
   );
 }
