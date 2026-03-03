@@ -61,7 +61,7 @@ export default function ProductCard({ info }: { info: IProduct }) {
 
   return (
     <>
-      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden transition-transform duration-300 hover:scale-105 hover:shadow-lg">
         <div className="relative">
           <Link href={`/products/${id}`}>
             <Image
