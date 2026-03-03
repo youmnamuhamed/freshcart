@@ -15,10 +15,10 @@ import {
   getLoggedUserCart,
 } from "@/features/Cart/server/cart.actions";
 import { toast } from "react-toastify";
-import { use, useState } from "react";
+import { useState } from "react";
 import { setCartnfo } from "@/features/Cart/Store/cart.slice";
-import { useDispatch } from "react-redux";
 import { useAppDispatch } from "@/Store/store";
+
 
 export default function ProductCard({ info }: { info: IProduct }) {
   const {

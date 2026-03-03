@@ -13,6 +13,7 @@ import {
   faMinus,
   faPlug,
   faPlus,
+  faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 import { faHeart } from "@fortawesome/free-regular-svg-icons";
 import Link from "next/link";
@@ -20,6 +21,13 @@ import { IProduct } from "../../types/products.types";
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/image-gallery.css";
 import { useState } from "react";
+import {
+  addProductToCart,
+  getLoggedUserCart,
+} from "@/features/Cart/server/cart.actions";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { setCartnfo } from "@/features/Cart/Store/cart.slice";
 
 export default function ProductInfo({ product }: { product: IProduct }) {
   const {
@@ -44,6 +52,25 @@ export default function ProductInfo({ product }: { product: IProduct }) {
   const lowStock = quantity > 0 && quantity < 10;
 
   const [count, setCount] = useState(1);
+
+  
+  const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch();
+  const handleAddToCart = async () => {
+    setIsLoading(true);
+    try {
+      const response = await addProductToCart({ ProductId: id });
+      if (response.status === "success") {
+        toast.success(response.message);
+        const cartInfo = await getLoggedUserCart();
+        dispatch(setCartnfo(cartInfo));
+      }
+    } catch (error) {
+      toast.error("Failed to add the product");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
@@ -236,9 +263,16 @@ export default function ProductInfo({ product }: { product: IProduct }) {
 
                 {/* Buttons */}
                 <div className="flex gap-4">
-                  <button className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl flex items-center justify-center gap-2">
-                    <FontAwesomeIcon icon={faCartShopping} />
-                    Add to Cart
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={isLoading || quantity === 0}
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed transition"
+                  >
+                    <FontAwesomeIcon
+                      icon={isLoading ? faSpinner : faCartShopping}
+                      spin={isLoading}
+                    />
+                    {isLoading ? "Adding..." : "Add to Cart"}
                   </button>
 
                   <button className="flex-1 bg-gray-900 hover:bg-black text-white py-3 rounded-xl flex items-center justify-center gap-2">

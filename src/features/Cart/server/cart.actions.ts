@@ -95,7 +95,7 @@ export async function updateProductQuantity(
       },
       data: {
         count,
-      }
+      },
     };
     const { data } = await axios.request(options);
     return data;
