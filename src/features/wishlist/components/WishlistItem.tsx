@@ -95,7 +95,7 @@ export default function WishlistItem({
             </Link>
             <div className="flex items-center gap-2 mt-2">
               {category?.name && (
-                <span className="inline-block px-2.5 py-1 bg-gradient-to-r from-primary-50 to-emerald-50 text-primary-700 text-xs font-medium rounded-full">
+                <span className="inline-block px-2.5 py-1 bg-linear-to-r from-primary-50 to-emerald-50 text-primary-700 text-xs font-medium rounded-full">
                   {category.name}
                 </span>
               )}
@@ -122,7 +122,7 @@ export default function WishlistItem({
             <button
               onClick={handleAddToCart}
               disabled={isLoading}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-primary-600 to-primary-700 text-white text-sm font-semibold rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all shadow-md shadow-primary-600/20 active:scale-[0.98]"
+              className="flex items-center gap-2 px-4 py-2.5 bg-linear-to-r from-primary-600 to-primary-700 text-white text-sm font-semibold rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all shadow-md shadow-primary-600/20 active:scale-[0.98]"
             >
               <FontAwesomeIcon icon={faShoppingCart} />
               <span>Add to Cart</span>

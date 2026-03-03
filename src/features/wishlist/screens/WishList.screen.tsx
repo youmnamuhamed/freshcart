@@ -1,5 +1,9 @@
 "use client";
-import { faArrowRight, faHeart, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowRight,
+  faHeart,
+  faSpinner,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -42,7 +46,11 @@ export default function WishlistScreen() {
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-20 flex justify-center">
-        <FontAwesomeIcon icon={faSpinner} spin className="text-3xl text-rose-500" />
+        <FontAwesomeIcon
+          icon={faSpinner}
+          spin
+          className="text-3xl text-rose-500"
+        />
       </div>
     );
   }
@@ -52,7 +60,10 @@ export default function WishlistScreen() {
       <div className="container mx-auto px-4 py-20">
         <div className="max-w-sm mx-auto text-center">
           <div className="w-20 h-20 rounded-2xl bg-rose-50 flex items-center justify-center mx-auto mb-6">
-            <FontAwesomeIcon icon={faHeart} className="text-rose-400 text-2xl" />
+            <FontAwesomeIcon
+              icon={faHeart}
+              className="text-rose-400 text-2xl"
+            />
           </div>
 
           <h2 className="text-xl font-bold text-gray-900 mb-2">
@@ -66,7 +77,7 @@ export default function WishlistScreen() {
 
           <Link
             href={`/`}
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-primary-600 to-primary-700 text-white py-3.5 px-8 rounded-xl font-semibold hover:from-primary-700 hover:to-primary-800 transition-all shadow-lg shadow-primary-600/20 active:scale-[0.98]"
+            className="inline-flex items-center gap-2 bg-linear-to-r from-primary-600 to-primary-700 text-white py-3.5 px-8 rounded-xl font-semibold hover:from-primary-700 hover:to-primary-800 transition-all shadow-lg shadow-primary-600/20 active:scale-[0.98]"
           >
             Start Shopping
             <FontAwesomeIcon icon={faArrowRight} />
@@ -82,7 +93,10 @@ export default function WishlistScreen() {
         <div className="mb-8">
           <nav className="flex items-center gap-2 text-sm text-gray-500 mb-4">
             <div className="mb-8">
-              <Link className="hover:text-primary-600 transition" href={`/`}></Link>
+              <Link
+                className="hover:text-primary-600 transition"
+                href={`/`}
+              ></Link>
               <span className="text-gray-900 font-medium">Wishlist</span>
             </div>
           </nav>
@@ -90,7 +104,7 @@ export default function WishlistScreen() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-                <span className="bg-gradient-to-r from-rose-500 to-pink-600 text-white w-12 h-12 rounded-xl flex items-center justify-center">
+                <span className="bg-;inear-to-r from-rose-500 to-pink-600 text-white w-12 h-12 rounded-xl flex items-center justify-center">
                   <FontAwesomeIcon icon={faHeart} />
                 </span>
                 My Wishlist

@@ -1,4 +1,3 @@
-
 import { ReactNode } from "react";
 import "../Styles/globals.css";
 import Navbar from "@/Components/Shared/Navbar";
@@ -14,17 +13,28 @@ import Providers from "@/Components/Providers/Providers";
 import { verifyToke } from "@/features/Authentication/server/auth.action";
 import { getLoggedUserCart } from "@/features/Cart/server/cart.actions";
 import { CartState } from "@/features/Cart/Store/cart.slice";
+import { getLoggedUserWishlist } from "@/features/wishlist/server/wishlist.action";
+import { WishlistState } from "@/features/wishlist/store/wishlist.slice";
 
 export const exo = Exo({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-exo",
 });
-let defualtCartState: CartState = {
+
+const defaultCartState: CartState = {
   numberOfCartItems: 0,
   cartId: null,
   products: [],
   totalCartPriced: 0,
+  isLoading: false,
+  error: null,
+};
+
+const defaultWishlistState: WishlistState = {
+  numberOfWishlistItems: 0,
+  wishlistId: null,
+  products: [],
   isLoading: false,
   error: null,
 };
@@ -36,7 +46,9 @@ export default async function RootLayout({
 }) {
   const response = await verifyToke();
 
-  let cartState = defualtCartState;
+  let cartState = defaultCartState;
+  let wishlistState = defaultWishlistState;
+
   if (response.isAuthenticated) {
     try {
       const cartResponse = await getLoggedUserCart();
@@ -49,13 +61,33 @@ export default async function RootLayout({
         error: null,
       };
     } catch (error) {
-      defualtCartState = cartState;
+      cartState = defaultCartState;
+    }
+
+    try {
+      const wishlistResponse = await getLoggedUserWishlist();
+      wishlistState = {
+        numberOfWishlistItems: wishlistResponse.count,
+        wishlistId: null,
+        products: wishlistResponse.data,
+        isLoading: false,
+        error: null,
+      };
+    } catch (error) {
+      wishlistState = defaultWishlistState;
     }
   }
+
   return (
     <html lang="en">
       <body className={`${exo.className} font-medium`}>
-        <Providers preloadedState={{ auth: response, cart: cartState }}>
+        <Providers
+          preloadedState={{
+            auth: response,
+            cart: cartState,
+            wishlist: wishlistState,
+          }}
+        >
           <Navbar />
           {children}
           <Footer />
