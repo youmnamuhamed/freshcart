@@ -1,7 +1,11 @@
+
+import CheckOutScreen from "@/features/CheckOut/screens/checkout.screen";
+
+
 export default function CheckoutPage() {
   return (
     <>
-      <h2>Checkout </h2>
+      <CheckOutScreen />
     </>
   );
 }

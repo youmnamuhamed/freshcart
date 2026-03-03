@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { CartItem, CartResponse } from "../Types/cart.types";
+import { stat } from "fs";
 
 export interface CartState {
   numberOfCartItems: number; // 👈 rename this
@@ -48,7 +49,15 @@ const cartSlice = createSlice({
         state.totalCartPriced -= removedProduct.price * removedProduct.count;
       }
     },
+
+    clearCart: function (state) {
+      state.cartId = null;
+      state.numberOfCartItems = 0;
+      state.products = [];
+      state.totalCartPriced = 0;
+    },
   },
 });
 export const cartReducer = cartSlice.reducer;
-export const { setCartnfo, removePorductFromCart } = cartSlice.actions;
+export const { setCartnfo, removePorductFromCart, clearCart } =
+  cartSlice.actions;

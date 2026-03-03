@@ -13,7 +13,7 @@ import {
   FontAwesomeLayers,
 } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
-import React from "react";
+
 
 export default function CartSummary({
   totalCartPrice,
