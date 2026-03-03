@@ -12,11 +12,11 @@ import {
 } from "../server/categories.action";
 
 interface Props {
-  categoryId: string; // plain string now
+  categoryId: string; 
 }
 
 export default async function SubCategories({ categoryId }: Props) {
-  console.log("categoryId:", categoryId); // should now have the value
+  console.log("categoryId:", categoryId); 
 
   const categoryRes = await GetCategoryById(categoryId);
   const subRes = await GetSubCategoriesByCategoryId(categoryId);

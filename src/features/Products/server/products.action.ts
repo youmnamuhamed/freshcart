@@ -67,3 +67,15 @@ export async function GetProductsByBrand(
     throw new Error("Failed to fetch brand products");
   }
 }
+export async function getProductsBySubcategory(subcategoryId: string): Promise<IProductsResponse> {
+  try {
+    const options: AxiosRequestConfig = {
+      url: `https://ecommerce.routemisr.com/api/v1/products?subcategory[in]=${subcategoryId}`,
+      method: "GET",
+    };
+    const { data } = await axios.request(options);
+    return data;
+  } catch (error) {
+    throw error;
+  }
+}
