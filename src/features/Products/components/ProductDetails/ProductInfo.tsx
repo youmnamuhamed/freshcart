@@ -11,11 +11,11 @@ import {
   faChevronRight,
   faHouse,
   faMinus,
-  faPlug,
   faPlus,
   faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 import { faHeart } from "@fortawesome/free-regular-svg-icons";
+import { faHeart as faHeartSolid } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { IProduct } from "../../types/products.types";
 import ImageGallery from "react-image-gallery";
@@ -25,9 +25,16 @@ import {
   addProductToCart,
   getLoggedUserCart,
 } from "@/features/Cart/server/cart.actions";
+import {
+  addProductToWishlist,
+  removeProductFromWishlist,
+  getLoggedUserWishlist,
+} from "../../../wishlist/server/wishlist.action";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { setCartnfo } from "@/features/Cart/Store/cart.slice";
+import { setWishlistInfo } from "../../../wishlist/store/wishlist.slice";
+import { useAppSelector } from "@/Store/store";
 
 export default function ProductInfo({ product }: { product: IProduct }) {
   const {
@@ -52,10 +59,16 @@ export default function ProductInfo({ product }: { product: IProduct }) {
   const lowStock = quantity > 0 && quantity < 10;
 
   const [count, setCount] = useState(1);
-
-  
   const [isLoading, setIsLoading] = useState(false);
+  const [isWishlistLoading, setIsWishlistLoading] = useState(false);
+
   const dispatch = useDispatch();
+
+  const wishlistProducts = useAppSelector(
+    (state) => state.wishlist.products ?? [],
+  );
+  const isInWishlist = wishlistProducts.some((p) => p.id === id);
+
   const handleAddToCart = async () => {
     setIsLoading(true);
     try {
@@ -69,6 +82,26 @@ export default function ProductInfo({ product }: { product: IProduct }) {
       toast.error("Failed to add the product");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleToggleWishlist = async () => {
+    setIsWishlistLoading(true);
+    try {
+      if (isInWishlist) {
+        const response = await removeProductFromWishlist(id);
+        dispatch(setWishlistInfo(response));
+        toast.success("Removed from wishlist");
+      } else {
+        await addProductToWishlist({ ProductId: id });
+        const wishlist = await getLoggedUserWishlist();
+        dispatch(setWishlistInfo(wishlist));
+        toast.success("Added to wishlist");
+      }
+    } catch (error) {
+      toast.error("Failed to update wishlist");
+    } finally {
+      setIsWishlistLoading(false);
     }
   };
 
@@ -283,9 +316,27 @@ export default function ProductInfo({ product }: { product: IProduct }) {
 
                 {/* Wishlist */}
                 <div className="flex gap-4">
-                  <button className="flex-1 border py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-gray-50">
-                    <FontAwesomeIcon icon={faHeart} />
-                    Add to Wishlist
+                  <button
+                    onClick={handleToggleWishlist}
+                    disabled={isWishlistLoading}
+                    className={`flex-1 border py-3 rounded-xl flex items-center justify-center gap-2 transition disabled:opacity-60 disabled:cursor-not-allowed ${
+                      isInWishlist
+                        ? "bg-rose-50 border-rose-300 text-rose-500 hover:bg-rose-100"
+                        : "hover:bg-gray-50 text-gray-700"
+                    }`}
+                  >
+                    <FontAwesomeIcon
+                      icon={
+                        isWishlistLoading
+                          ? faSpinner
+                          : isInWishlist
+                            ? faHeartSolid
+                            : faHeart
+                      }
+                      spin={isWishlistLoading}
+                      className={isInWishlist ? "text-rose-500" : ""}
+                    />
+                    {isInWishlist ? "Saved to Wishlist" : "Add to Wishlist"}
                   </button>
 
                   <button className="px-4 border rounded-xl hover:bg-gray-50">

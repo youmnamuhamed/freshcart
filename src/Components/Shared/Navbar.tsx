@@ -37,6 +37,10 @@ export default function Navbar() {
     (state) => state.cart.numberOfCartItems,
   );
 
+  const numberOfWishlistItems = useAppSelector(
+    (state) => state.wishlist.numberOfWishlistItems,
+  );
+
   const { isAuthenticated, userInfo } = useSelector(
     (appState: AppState) => appState.auth,
   );
@@ -124,7 +128,6 @@ export default function Navbar() {
               {isAuthenticated ? (
                 <>
                   <li className="flex items-center gap-1.5 cursor-pointer hover:text-primary-500">
-                    {/* Email as link to profile */}
                     <Link
                       href="/profile/addresses"
                       className="flex items-center gap-1.5 text-gray-600 hover:text-primary-600 transition-colors"
@@ -251,9 +254,17 @@ export default function Navbar() {
               {/* Wishlist */}
               <Link
                 href="/wishlist"
-                className="text-gray-500 hover:text-primary-600 transition-colors duration-200"
+                className="relative p-2.5 rounded-full hover:bg-gray-100 transition-colors group"
               >
-                <FontAwesomeIcon icon={faHeart} className="text-xl" />
+                <FontAwesomeIcon
+                  icon={faHeart}
+                  className="text-xl text-gray-500 group-hover:text-rose-500 transition-colors"
+                />
+                {numberOfWishlistItems > 0 && (
+                  <span className="absolute top-0.5 right-0.5 size-4.5 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white">
+                    {numberOfWishlistItems}
+                  </span>
+                )}
               </Link>
 
               {/* Cart */}
@@ -266,15 +277,16 @@ export default function Navbar() {
                     icon={faCartShopping}
                     className="text-xl text-gray-500 group-hover:text-primary-600 transition-colors "
                   />
-                  <span className="absolute top-0.5 right-0.5 size-4.5 rounded-full bg-primary-600 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white">
-                    {numberOfCartItems}
-                  </span>
+                  {numberOfCartItems > 0 && (
+                    <span className="absolute top-0.5 right-0.5 size-4.5 rounded-full bg-primary-600 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white">
+                      {numberOfCartItems}
+                    </span>
+                  )}
                 </div>
               </Link>
 
               {isAuthenticated ? (
                 <div className="hidden lg:block relative" ref={menuRef}>
-                  {/* User Icon Button */}
                   <button
                     onClick={() => setOpenMenu(!openMenu)}
                     className=" p-2.5 rounded-full hover:bg-gray-100 transition-colors group"
@@ -285,7 +297,6 @@ export default function Navbar() {
                     />
                   </button>
 
-                  {/* Dropdown Menu */}
                   {openMenu && (
                     <div className="absolute right-0 mt-3 w-60 bg-white rounded-2xl shadow-lg border border-gray-200 py-2 z-50">
                       <Link
@@ -424,12 +435,19 @@ export default function Navbar() {
                   <Link
                     href="/wishlist"
                     onClick={ToggleMenu}
-                    className="flex items-center gap-3 px-3 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                    className="flex items-center justify-between px-3 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
                   >
-                    <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-400">
-                      <FontAwesomeIcon icon={faHeart} />
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-400">
+                        <FontAwesomeIcon icon={faHeart} />
+                      </div>
+                      <span className="text-base font-medium">Wishlist</span>
                     </div>
-                    <span className="text-base font-medium">Wishlist</span>
+                    {numberOfWishlistItems > 0 && (
+                      <span className="bg-rose-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                        {numberOfWishlistItems}
+                      </span>
+                    )}
                   </Link>
                 </li>
                 {/* Cart */}
@@ -457,7 +475,6 @@ export default function Navbar() {
             <div className="px-5 py-4 border-b border-gray-100">
               {isAuthenticated ? (
                 <div className="space-y-2">
-                  {/* Email + Profile */}
                   <Link
                     href="/profile"
                     onClick={ToggleMenu}
@@ -466,7 +483,6 @@ export default function Navbar() {
                     <p>{userName}</p>
                   </Link>
 
-                  {/* Logout */}
                   <button
                     onClick={() => {
                       logout();

@@ -7,17 +7,25 @@ import {
   faEye,
   faHeart,
   faPlus,
+  faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
+import { faHeart as faHeartOutline } from "@fortawesome/free-regular-svg-icons";
 import Link from "next/link";
 import { IProduct } from "../types/products.types";
 import {
   addProductToCart,
   getLoggedUserCart,
 } from "@/features/Cart/server/cart.actions";
+import {
+  addProductToWishlist,
+  removeProductFromWishlist,
+  getLoggedUserWishlist,
+} from "../../wishlist/server/wishlist.action";
 import { toast } from "react-toastify";
 import { useState } from "react";
 import { setCartnfo } from "@/features/Cart/Store/cart.slice";
-import { useAppDispatch } from "@/Store/store";
+import { setWishlistInfo } from "../../wishlist/store/wishlist.slice";
+import { useAppDispatch, useAppSelector } from "@/Store/store";
 
 
 export default function ProductCard({ info }: { info: IProduct }) {
@@ -34,28 +42,52 @@ export default function ProductCard({ info }: { info: IProduct }) {
 
   const dispatch = useAppDispatch();
 
+  const wishlistProducts = useAppSelector(
+    (state) => state.wishlist.products ?? [],
+  );
+  const isInWishlist = wishlistProducts.some((p) => p.id === id);
+
   const Onsale = priceAfterDiscount ? priceAfterDiscount < price : false;
   const discountPercentage = priceAfterDiscount
     ? Math.round(((price - priceAfterDiscount) / price) * 100)
     : 0;
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isWishlistLoading, setIsWishlistLoading] = useState(false);
 
   const handleAddToCart = async () => {
     setIsLoading(true);
     try {
       const response = await addProductToCart({ ProductId: id });
-      console.log(response);
       if (response.status == "success") {
         toast.success(response.message);
-
         const cartInfo = await getLoggedUserCart();
         dispatch(setCartnfo(cartInfo));
       }
     } catch (error) {
-      toast.error("failed to add the product");
+      toast.error("Failed to add the product");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleToggleWishlist = async () => {
+    setIsWishlistLoading(true);
+    try {
+      if (isInWishlist) {
+        const response = await removeProductFromWishlist(id);
+        dispatch(setWishlistInfo(response));
+        toast.success("Removed from wishlist");
+      } else {
+        await addProductToWishlist({ ProductId: id });
+        const wishlist = await getLoggedUserWishlist();
+        dispatch(setWishlistInfo(wishlist));
+        toast.success("Added to wishlist");
+      }
+    } catch (error) {
+      toast.error("Failed to update wishlist");
+    } finally {
+      setIsWishlistLoading(false);
     }
   };
 
@@ -81,15 +113,32 @@ export default function ProductCard({ info }: { info: IProduct }) {
           </div>
 
           <div className="absolute top-3 right-3 flex flex-col space-y-2">
-            <button className="bg-white h-8 w-8 rounded-full flex items-center justify-center transition shadow-sm text-gray-600 hover:text-red-500">
-              <FontAwesomeIcon icon={faHeart} />
+            <button
+              onClick={handleToggleWishlist}
+              disabled={isWishlistLoading}
+              className={`bg-white h-8 w-8 rounded-full flex items-center justify-center transition shadow-sm disabled:opacity-60 ${
+                isInWishlist
+                  ? "text-rose-500"
+                  : "text-gray-600 hover:text-rose-500"
+              }`}
+            >
+              <FontAwesomeIcon
+                icon={
+                  isWishlistLoading
+                    ? faSpinner
+                    : isInWishlist
+                      ? faHeart
+                      : faHeartOutline
+                }
+                spin={isWishlistLoading}
+              />
             </button>
             <button className="bg-white h-8 w-8 rounded-full flex items-center justify-center text-gray-600 hover:text-primary-600 shadow-sm">
               <FontAwesomeIcon icon={faArrowsRotate} />
             </button>
             <Link
               className="bg-white h-8 w-8 rounded-full flex items-center justify-center text-gray-600 hover:text-primary-600 shadow-sm"
-              href={``}
+              href={`/products/${id}`}
             >
               <FontAwesomeIcon icon={faEye} />
             </Link>
@@ -110,7 +159,6 @@ export default function ProductCard({ info }: { info: IProduct }) {
             <div className="text-xs text-gray-500">
               {ratingsAverage} ({ratingsQuantity} reviews)
             </div>
-            <span className="text-xs text-gray-500"></span>
           </div>
           <div className="flex items-center justify-between">
             <div>
@@ -128,7 +176,7 @@ export default function ProductCard({ info }: { info: IProduct }) {
               onClick={handleAddToCart}
               disabled={isLoading}
             >
-              <FontAwesomeIcon icon={faPlus} />
+              <FontAwesomeIcon icon={isLoading ? faSpinner : faPlus} spin={isLoading} />
             </button>
           </div>
         </div>
