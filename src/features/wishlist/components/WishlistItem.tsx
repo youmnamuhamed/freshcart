@@ -15,7 +15,10 @@ import {
 } from "../../Cart/server/cart.actions";
 import { toast } from "react-toastify";
 import { useAppDispatch } from "@/Store/store";
-import { setWishlistInfo } from "../store/wishlist.slice";
+import {
+  removeProductFromWishlistState,
+  setWishlistInfo,
+} from "../store/wishlist.slice";
 import { useState } from "react";
 import { setCartnfo } from "@/features/Cart/Store/cart.slice";
 
@@ -31,14 +34,14 @@ export default function WishlistItem({
   const handleRemove = async () => {
     const result = await Swal.fire({
       html: `<div class="text-center py-2">
-      <div class="w-16 h-16 rounded-full bg-red-100 mx-auto flex items-center justify-center mb-4">
-        <svg class="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-        </svg>
-      </div>
-      <h3 class="text-lg font-bold text-gray-900">Remove from Wishlist</h3>
-      <p class="text-sm text-gray-500">Remove <span class="font-semibold text-gray-700">${title.slice(0, 40)}${title.length > 40 ? "..." : ""}</span> from your wishlist?</p>
-      </div>`,
+    <div class="w-16 h-16 rounded-full bg-red-100 mx-auto flex items-center justify-center mb-4">
+      <svg class="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+      </svg>
+    </div>
+    <h3 class="text-lg font-bold text-gray-900">Remove from Wishlist</h3>
+    <p class="text-sm text-gray-500">Remove <span class="font-semibold text-gray-700">${title.slice(0, 40)}${title.length > 40 ? "..." : ""}</span> from your wishlist?</p>
+    </div>`,
       showCancelButton: true,
       showConfirmButton: true,
       confirmButtonText: "Yes, remove it",
@@ -48,8 +51,8 @@ export default function WishlistItem({
     });
 
     if (result.isConfirmed) {
-      const response = await removeProductFromWishlist(id);
-      dispatch(setWishlistInfo(response));
+      await removeProductFromWishlist(id);
+      dispatch(removeProductFromWishlistState({ id }));
       toast.success("Product removed from wishlist");
     }
   };
