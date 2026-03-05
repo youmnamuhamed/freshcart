@@ -94,6 +94,29 @@ export default function Navbar() {
     GetAllCategories().then((res) => setCategories(res.data));
   }, []);
 
+  // Add a new ref and state for categories menu
+  const [openCategories, setOpenCategories] = useState(false);
+  const categoriesRef = useRef<HTMLLIElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpenMenu(false);
+      }
+      // Add this:
+      if (
+        categoriesRef.current &&
+        !categoriesRef.current.contains(event.target as Node)
+      ) {
+        setOpenCategories(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   return (
     <>
       <div className="border-b border-gray-200 shadow-sm">
@@ -203,31 +226,42 @@ export default function Navbar() {
                   Shop
                 </Link>
               </li>
-              <li className="relative group">
-                <button className="flex items-center gap-1 text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors duration-200">
+              <li className="relative" ref={categoriesRef}>
+                <button
+                  onClick={() => setOpenCategories(!openCategories)}
+                  className="flex items-center gap-1 text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors duration-200"
+                >
                   Categories
-                  <FontAwesomeIcon icon={faChevronDown} className="text-xs" />
+                  <FontAwesomeIcon
+                    icon={faChevronDown}
+                    className={`text-xs transition-transform duration-200 ${openCategories ? "rotate-180" : ""}`}
+                  />
                 </button>
-                <menu className="hidden group-hover:block absolute top-full left-0 mt-2 min-w-52 bg-white rounded-lg shadow-lg border border-gray-100 divide-y divide-gray-100 z-50">
-                  <li className="px-4 py-3 hover:bg-gray-50">
-                    <Link
-                      href={`/categories`}
-                      className="text-sm text-gray-700 hover:text-primary-600"
-                    >
-                      All categories
-                    </Link>
-                  </li>
-                  {categories.map((cat) => (
-                    <li key={cat._id} className="px-4 py-3 hover:bg-gray-50">
+
+                {openCategories && (
+                  <menu className="absolute top-full left-0 mt-2 min-w-52 bg-white rounded-lg shadow-lg border border-gray-100 divide-y divide-gray-100 z-50 max-h-80 overflow-y-auto">
+                    <li className="px-4 py-3 hover:bg-gray-50">
                       <Link
-                        href={`/products?category=${cat._id}`}
+                        href="/categories"
+                        onClick={() => setOpenCategories(false)}
                         className="text-sm text-gray-700 hover:text-primary-600"
                       >
-                        {cat.name}
+                        All categories
                       </Link>
                     </li>
-                  ))}
-                </menu>
+                    {categories.map((cat) => (
+                      <li key={cat._id} className="px-4 py-3 hover:bg-gray-50">
+                        <Link
+                          href={`/products?category=${cat._id}`}
+                          onClick={() => setOpenCategories(false)}
+                          className="text-sm text-gray-700 hover:text-primary-600"
+                        >
+                          {cat.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </menu>
+                )}
               </li>
               <li>
                 <Link href="/brands" className={navLinkClasses("/brands")}>
