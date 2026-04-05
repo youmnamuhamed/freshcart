@@ -155,15 +155,49 @@ This approach improves:
 ### 1️⃣ Clone the repository
 ```bash
 git clone https://github.com/youmnamuhamed/freshcart.git
-2️⃣ Navigate to the project cd freshcart
-3️⃣ Install dependencies npm install
-4️⃣ Run the development server npm run dev
-5️⃣ Open in browser http://localhost:3000
+```
 
+### 2️⃣ Navigate to the project
+```bash
+cd freshcart
+```
 
-🎯 Project Purpose
-This project was developed as a practice task during my Front-End Diploma, focusing on: Building real-world applications Applying modern frontend architecture Improving performance and scalability
-🚀 Future Improvements Admin dashboard Product reviews & ratings Advanced filtering Performance optimization
-👩‍💻 Author Youmna Muhammed Frontend Developer
-💼 LinkedIn: https://www.linkedin.com/
-💻 GitHub: https://github.com/youmnamuhamed
+### 3️⃣ Install dependencies
+```bash
+npm install
+```
+
+### 4️⃣ Run the development server
+```bash
+npm run dev
+```
+
+### 5️⃣ Open in browser
+```bash
+http://localhost:3000
+```
+
+---
+
+## 🎯 Project Purpose
+
+This project was developed as a practice task during my Front-End Diploma, focusing on:
+
+- Building real-world applications
+- Applying modern frontend practices
+
+## 🚀 Future Improvements
+
+- Admin dashboard
+- Product reviews & ratings
+- Advanced filtering
+- Performance optimization
+
+---
+
+## 👩‍💻 Author
+
+**Youmna Muhammed** — Frontend Developer
+
+- 💼 [LinkedIn](https://www.linkedin.com/in/youmnamuhamed)
+- 🐙 [GitHub](https://github.com/youmnamuhamed)
